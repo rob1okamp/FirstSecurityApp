@@ -38,10 +38,17 @@ public class SecurityConfig {
 //                        .defaultSuccessUrl("/hello",true)
 //                        .failureUrl("auth/login?error").permitAll());
 //    }
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider () {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(getPasswordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(personDetailsService);
+        return daoAuthenticationProvider;
+    }
 
-    protected void configure (AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(personDetailsService);
-
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -52,9 +59,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login","/error").permitAll()
                         .anyRequest().authenticated())
                         .formLogin(formLogin->formLogin.loginPage("/auth/login")
-                        .loginProcessingUrl("process_login")
+                        .loginProcessingUrl("/process_login")
                         .defaultSuccessUrl("/hello",true)
-                        .failureUrl("auth/login?error").permitAll());
+                        .failureUrl("/auth/login?error").permitAll());
         return http.build();
     }
 
