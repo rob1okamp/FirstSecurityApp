@@ -56,12 +56,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf->csrf.disable())
                 .authorizeHttpRequests(authorize->authorize
-                        .requestMatchers("/auth/login","/error").permitAll()
+                        .requestMatchers("/auth/login","/error","/auth/registration").permitAll()
                         .anyRequest().authenticated())
                         .formLogin(formLogin->formLogin.loginPage("/auth/login")
                         .loginProcessingUrl("/process_login")
                         .defaultSuccessUrl("/hello",true)
                         .failureUrl("/auth/login?error").permitAll());
+        http.logout(logout->logout.logoutUrl("/logout")
+                .logoutSuccessUrl("/auth/login").permitAll());
         return http.build();
     }
 
